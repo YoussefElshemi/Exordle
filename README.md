@@ -10,14 +10,14 @@ Player's will be able to compete against other students, teachers, members of th
 
 ### Developers
 
-Youssef Elshemi
+[Youssef Elshemi](https://github.com/YoussefElshemi)
 
-Harvey Bellini
+[Harvey Bellini](https://github.com/harveybellini)
 
-Quitterie D'Estalenx
+[Quitterie D'Estalenx](https://github.com/quitterielacome)
 
-Alexander Robertson
+[Alexander Robertson](https://github.com/cerebralchip)
 
-Theo Dal Pozzo Dos Santos
+[Theo Dal Pozzo Dos Santos](https://github.com/theosantos3)
 
-Guillemette Clouzeau 
+[Guillemette Clouzeau](https://github.com/guillemetteclouzeau)
