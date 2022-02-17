@@ -1,0 +1,24 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'img/logo.png' %}">
+    <title>Exordle - A Daily Word Game</title>
+  </head>
+  <body>
+    <div>
+      <div>{% for i in range %}
+      <form id="{{ i }}" method="POST" action="/check" autocomplete="off">
+        <input type="hidden" name="guess" value="{{ i }}">{% for j in word_range %}
+        <input type="text" name="{{ j }}" maxlength="1">{% endfor %}
+      </form>{% endfor %}
+      </div>
+    </div>
+  </body>
+  <script src="{% static '/js/script.js' %}"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</html>
