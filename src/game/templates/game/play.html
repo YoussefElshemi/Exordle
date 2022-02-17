@@ -11,60 +11,11 @@
   </head>
   <body>
     <div>
-      <div>
-        <form id="1" method="POST" action="/check" autocomplete="off">
-          <input type="hidden" name="guess" value="1">
-          <input type="text" name="1" maxlength="1">
-          <input type="text" name="2" maxlength="1">
-          <input type="text" name="3" maxlength="1">
-          <input type="text" name="4" maxlength="1">
-          <input type="text" name="5" maxlength="1">
-        </form>
-
-        <form id="2" method="POST" action="/check" autocomplete="off">
-          <input type="hidden" name="guess" value="2">
-          <input type="text" name="1" maxlength="1">
-          <input type="text" name="2" maxlength="1">
-          <input type="text" name="3" maxlength="1">
-          <input type="text" name="4" maxlength="1">
-          <input type="text" name="5" maxlength="1">
-        </form>
-
-        <form id="3" method="POST" action="/check" autocomplete="off">
-          <input type="hidden" name="guess" value="3">
-          <input type="text" name="1" maxlength="1">
-          <input type="text" name="2" maxlength="1">
-          <input type="text" name="3" maxlength="1">
-          <input type="text" name="4" maxlength="1">
-          <input type="text" name="5" maxlength="1">
-        </form>
-
-        <form id="4" method="POST" action="/check" autocomplete="off">
-          <input type="hidden" name="guess" value="4">
-          <input type="text" name="1" maxlength="1">
-          <input type="text" name="2" maxlength="1">
-          <input type="text" name="3" maxlength="1">
-          <input type="text" name="4" maxlength="1">
-          <input type="text" name="5" maxlength="1">
-        </form>
-
-        <form id="5" method="POST" action="/check" autocomplete="off">
-          <input type="hidden" name="guess" value="5">
-          <input type="text" name="1" maxlength="1">
-          <input type="text" name="2" maxlength="1">
-          <input type="text" name="3" maxlength="1">
-          <input type="text" name="4" maxlength="1">
-          <input type="text" name="5" maxlength="1">
-        </form>
-
-        <form id="6" method="POST" action="/check" autocomplete="off">
-          <input type="hidden" name="guess" value="6">
-          <input type="text" name="1" maxlength="1">
-          <input type="text" name="2" maxlength="1">
-          <input type="text" name="3" maxlength="1">
-          <input type="text" name="4" maxlength="1">
-          <input type="text" name="5" maxlength="1">
-        </form>
+      <div>{% for i in range %}
+      <form id="{{ i }}" method="POST" action="/check" autocomplete="off">
+        <input type="hidden" name="guess" value="{{ i }}">{% for j in word_range %}
+        <input type="text" name="{{ j }}" maxlength="1">{% endfor %}
+      </form>{% endfor %}
       </div>
     </div>
   </body>
