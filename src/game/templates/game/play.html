@@ -8,13 +8,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="{% static 'img/logo.png' %}">
     <link rel="stylesheet" href="{% static '/css/style.css' %}">
-
     <title>Exordle - A Daily Word Game</title>
   </head>
   <body>
     <div>
       <div>{% for i in range %}
-      <form id="{{ i }}" method="POST" action="/check" autocomplete="off">
+      <form id="{{ i }}" class="word" method="POST" action="/check" autocomplete="off">
         <input type="hidden" name="guess" value="{{ i }}">{% for j in word_range %}
         <input type="text" name="{{ j }}" maxlength="1">{% endfor %}
       </form>{% endfor %}
