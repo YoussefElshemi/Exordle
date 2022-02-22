@@ -1,12 +1,11 @@
-import json
-from django.http import HttpResponse
 from django.shortcuts import render
+from django.http import JsonResponse
 
 def index(request):
     return render(request, 'game/index.html', {})
 
-def game(request):
-    word = 'FORUM'
+def play(request):
+    word = get_word()
     length = len(word) + 1
 
     context = {
@@ -17,12 +16,11 @@ def game(request):
     return render(request, 'game/play.html', context)
 
 def check(request):
-    word = 'FORUM'
-    request.POST._mutable = True
+    word = get_word()
 
+    request.POST._mutable = True
     request.POST.pop("guess")
     request.POST.pop("csrfmiddlewaretoken")
-
     request.POST._mutable = False
 
     data = {}
@@ -30,12 +28,14 @@ def check(request):
         idx = int(position) - 1
         if word[idx] == value.upper():
             data[position] = "perfect"
-            word = word.replace(value.upper(), " ")
+            word = word.replace(value.upper(), " ", 1)
         elif value.upper() in word:
             data[position] = "correct"
-            word = word.replace(value.upper(), " ")
+            word = word.replace(value.upper(), " ", 1)
         else:
             data[position] = "wrong"
 
-    return HttpResponse(json.dumps(data))
- 
+    return JsonResponse(data)
+
+def get_word():
+    return "FORUM"
