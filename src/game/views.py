@@ -1,3 +1,7 @@
+import random
+import qrcode
+import qrcode.image.svg
+from io import BytesIO
 from django.shortcuts import render
 from django.http import JsonResponse
 
@@ -39,3 +43,14 @@ def check(request):
 
 def get_word():
     return "FORUM"
+
+def qr():
+    code = str(random.randint(0, 999999))
+    padded_code = code.zfill(6)
+        
+    factory = qrcode.image.svg.SvgPathImage
+    img = qrcode.make(padded_code, image_factory=factory, box_size=20)
+    stream = BytesIO()
+    img.save(stream)
+
+    return JsonResponse({ "svg": stream.getvalue().decode() })
