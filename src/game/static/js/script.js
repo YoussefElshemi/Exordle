@@ -100,11 +100,13 @@ for (const form of forms) {
           }
         });
       }
-    } else if (target.value) {
-      const next = target.nextElementSibling;
-      await sleep(1);
+    } else {
+      if (target.value && target.previousElementSibling) {
+        const next = target.nextElementSibling;
+        await sleep(1);
 
-      if (next) next.focus();
+        if (next) next.focus();
+      }
     }
   });
 }
