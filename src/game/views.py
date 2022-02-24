@@ -1,7 +1,7 @@
 import random
+from io import BytesIO
 import qrcode
 import qrcode.image.svg
-from io import BytesIO
 from django.shortcuts import render
 from django.http import JsonResponse
 
@@ -20,37 +20,42 @@ def play(request):
     return render(request, 'game/play.html', context)
 
 def check(request):
-    word = get_word()
+    if request.method == "POST":
+        word = get_word()
+        request.POST._mutable = True
+        request.POST.pop("guess")
+        request.POST.pop("csrfmiddlewaretoken")
+        request.POST._mutable = False
 
-    request.POST._mutable = True
-    request.POST.pop("guess")
-    request.POST.pop("csrfmiddlewaretoken")
-    request.POST._mutable = False
+        data = {}
+        for position, value in request.POST.items():
+            idx = int(position) - 1
+            if word[idx] == value.upper():
+                data[position] = "perfect"
+                word = word.replace(value.upper(), " ", 1)
+            elif value.upper() in word:
+                data[position] = "correct"
+                word = word.replace(value.upper(), " ", 1)
+            else:
+                data[position] = "wrong"
 
-    data = {}
-    for position, value in request.POST.items():
-        idx = int(position) - 1
-        if word[idx] == value.upper():
-            data[position] = "perfect"
-            word = word.replace(value.upper(), " ", 1)
-        elif value.upper() in word:
-            data[position] = "correct"
-            word = word.replace(value.upper(), " ", 1)
-        else:
-            data[position] = "wrong"
+        return JsonResponse(data)
 
-    return JsonResponse(data)
+    return None
 
 def get_word():
     return "FORUM"
 
-def qr(request):
-    code = str(random.randint(0, 999999))
-    padded_code = code.zfill(6)
-        
-    factory = qrcode.image.svg.SvgPathImage
-    img = qrcode.make(padded_code, image_factory=factory, box_size=20)
-    stream = BytesIO()
-    img.save(stream)
+def qr_code(request):
+    if request.method == "POST":
+        code = str(random.randint(0, 999999))
+        padded_code = code.zfill(6)
 
-    return JsonResponse({ "svg": stream.getvalue().decode() })
+        factory = qrcode.image.svg.SvgPathImage
+        img = qrcode.make(padded_code, image_factory=factory, box_size=20)
+        stream = BytesIO()
+        img.save(stream)
+
+        return JsonResponse({ "svg": stream.getvalue().decode() })
+
+    return None
