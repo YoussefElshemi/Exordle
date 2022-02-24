@@ -37,13 +37,28 @@ function getRecentElement() {
 for (const form of forms) {
   form.addEventListener("input", ({ data, target }) => {
     if (!data) return;
+    
+    const next = target.nextElementSibling;
+    if (next && next.nodeName === "INPUT") next.focus();
+  });
 
-    if (target.value !== "") {
+  form.addEventListener("keydown", async ({ key, target }) => {
+    if (key == "Backspace" && target.previousElementSibling) {
+      const previous = target.previousElementSibling;
+
+      if (previous.nodeName === "INPUT") {
+        await sleep(1);
+        return previous.focus();
+      }
+        
+      const previousParent = target.parentElement.previousElementSibling;
+      if (previous.hidden && previousParent) {
+        return previousParent.children[previousParent.length - 1].focus();
+      }
+    } else if (key == "Enter") {
       const next = target.nextElementSibling;
       const nextParent = target.parentElement.parentElement.nextElementSibling;
-
-      if (next && next.nodeName === "INPUT") next.focus();
-
+      
       if (!next) {
         const data = Object.fromEntries(new FormData(form));   
         const wordArray = Object.values(data).filter(c => c != " ");
@@ -71,7 +86,7 @@ for (const form of forms) {
               await sleep(200);
               inputElement.classList.remove("result");
             }
-      
+        
             if (nextParent) {              
               for (const input of nextParent) {
                 input.disabled = false;
@@ -85,24 +100,76 @@ for (const form of forms) {
           }
         });
       }
+    } else if (target.value) {
+      const next = target.nextElementSibling;
+      await sleep(1);
+
+      if (next) next.focus();
     }
   });
+}
 
-  form.addEventListener("keydown", async ({ key, target }) => {
-    if (key == "Backspace" && target.previousElementSibling) {
-      const previous = target.previousElementSibling;
+const hintButton = document.getElementById("hint");
+hintButton.addEventListener("click", async () => {
+  const modalElement = document.getElementById("myForm");
 
-      if (previous.nodeName === "INPUT") {
-        await sleep(1);
-        return previous.focus();
-      }
-        
-      const previousParent = target.parentElement.previousElementSibling;
-      if (previous.hidden && previousParent) {
-        return previousParent.children[previousParent.length - 1].focus();
-      }
+  if (modalElement.style.display === "block") return closeModal();
+
+  const form = document.getElementById("submitHint");
+  const divElement = document.createElement("div");
+
+  divElement.setAttribute("id", "svg");
+  modalElement.insertBefore(divElement, form);
+  modalElement.style.display = "block";    
+
+
+  while (modalElement.style.display === "block") {
+    const data = {
+      csrfmiddlewaretoken: getCookie("csrftoken")
     }
-  });
+
+    $.ajax({
+      url: "/qr",
+      method: "POST",
+      data,
+      success: async ({ svg }) => {
+        divElement.innerHTML = svg.replace(/58mm/g, "100%");
+      },
+      error: data => {
+        console.log(data);
+      }
+    });
+
+    await sleep(10000);
+  }
+});
+
+const closeElement = document.getElementById("close");
+closeElement.addEventListener("click", () => {
+  closeModal();
+})
+
+
+function closeModal() {
+  const modalElement = document.getElementById("myForm");
+  modalElement.style.display = "none";
+
+  for (const child of modalElement.children) {
+    if (child.nodeName === "FORM") continue;
+    modalElement.removeChild(child);
+  }
+}
+
+const modalElement = document.getElementById("myForm");
+window.onclick = event => {
+  const backgroundElement = document.getElementsByClassName("parent")[0];
+  if (event.target == backgroundElement) closeModal();
+}
+
+async function sleep(timeout=2000) {
+  return new Promise(res => {
+    setTimeout(res, timeout);
+  })
 }
 
 function getCookie(name) {
@@ -116,10 +183,4 @@ function getCookie(name) {
       }
     }
   }
-}
-
-async function sleep(timeout=2000) {
-  return new Promise(res => {
-    setTimeout(res, timeout);
-  })
 }

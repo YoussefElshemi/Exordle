@@ -7,9 +7,9 @@ html, body {
 
 .word > * {
   display: inline-block;
-  font-size: 2rem;
-  width: 3rem;
-  height: 3rem;
+  font-size: 200%;
+  width: 50px;
+  height: 50px;
   color: white;
   border: 1px solid #3A3A3C;
   background-color: transparent;
@@ -29,7 +29,6 @@ html, body {
   animation-name: shake;
   animation-duration: 500ms;
 }
-
 
 .parent {
   position: fixed;
@@ -131,4 +130,51 @@ html, body {
   80% { transform: translate(-1px, -1px) rotate(1deg); }
   90% { transform: translate(1px, 2px) rotate(0deg); }
   100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.form-popup {
+  display: none;
+  position: fixed;
+  width: 30%;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+  background-color: white;
+}
+
+.form-container {
+  padding: 10px;
+  background-color: white;
+}
+
+.form-container input {
+  width: 90%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+}
+
+.close {
+  position: absolute;
+  right: 5px;
+  top: 0;
+  color: #000;
+  font-size: 50px;
+  font-weight: bolder;
+}
+
+.close:hover,
+.close:focus {
+  cursor: pointer;
+}
+
+@media screen and (max-width: 600px) {
+  .form-popup {
+    width: 100%;
+    height: 100%;
+  }
 }

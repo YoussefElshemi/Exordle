@@ -26,6 +26,17 @@
     <div class="hint">
       <button id="hint" class="green">HINTS</button>
     </div>
+
+    <div class="form-popup" id="myForm">
+      <form id="submitHint" class="form-container">
+        <span id="close" class="close" title="Close Modal">&times;</span>
+        <input type="text" placeholder="Enter Code" name="code">
+        <center>
+          <button style="width: 30%;" type="submit" class="green">Submit</button>
+          <button onclick="scanQr(this)" type="button" style="width: 30%;" class="green">Scan</button>
+        </center>
+      </form>
+    </div>
   </body>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="{% static '/js/script.js' %}"></script>

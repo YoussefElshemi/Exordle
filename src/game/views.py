@@ -44,7 +44,7 @@ def check(request):
 def get_word():
     return "FORUM"
 
-def qr():
+def qr(request):
     code = str(random.randint(0, 999999))
     padded_code = code.zfill(6)
         
