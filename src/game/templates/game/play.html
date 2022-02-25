@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="{% static 'img/logo.png' %}">
     <link rel="stylesheet" href="{% static '/css/style.css' %}">
+    <script src="https://kit.fontawesome.com/aac2e10b00.js" crossorigin="anonymous"></script>
     <title>Exordle - A Daily Word Game</title>
   </head>
   <body class="container">
@@ -17,14 +18,14 @@
           {% csrf_token %}
           <input type="hidden" name="guess" value="{{ i }}">
           <div class="word">{% for j in word_range %}
-            <input type="text" name="{{ j }}" maxlength="1" {% if i != 1 %}disabled{% endif %}>{% endfor %}
+            <input inputmode='none' type="text" name="{{ j }}" maxlength="1" {% if i != 1 %}disabled{% endif %}>{% endfor %}
           </div>
         </form>{% endfor %}
       </div>
     </div>
 
     <div class="hint">
-      <button id="hint" class="green">HINTS</button>
+      <button onclick="hintButton()" id="hint" class="green">HINTS</button>
     </div>
 
     <div class="form-popup" id="myForm">
@@ -33,10 +34,52 @@
         <input type="text" placeholder="Enter Code" name="code">
         <center>
           <button style="width: 30%;" type="submit" class="green">Submit</button>
-          <button onclick="scanQr(this)" type="button" style="width: 30%;" class="green">Scan</button>
+          <button onclick="scanQr()" type="button" style="width: 30%;" class="green">Scan</button>
         </center>
       </form>
     </div>
+
+    <div class="keyboard">
+      <div class="row">
+        <button id="q">Q</button>
+        <button id="w">W</button>
+        <button id="e">E</button>
+        <button id="r">R</button>
+        <button id="t">T</button>
+        <button id="y">Y</button>
+        <button id="u">U</button>
+        <button id="i">I</button>
+        <button id="o">O</button>
+        <button id="p">P</button>
+      </div>
+      <div class="row">
+        <button id="a">A</button>
+        <button id="s">S</button>
+        <button id="d">D</button>
+        <button id="f">F</button>
+        <button id="g">G</button>
+        <button id="h">H</button>
+        <button id="j">J</button>
+        <button id="k">K</button>
+        <button id="l">L</button>
+      </div>
+      <div class="row">
+        <button id="enter">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+        </button>
+        <button id="z">Z</button>
+        <button id="x">X</button>
+        <button id="c">C</button>
+        <button id="v">V</button>
+        <button id="b">B</button>
+        <button id="n">N</button>
+        <button id="m">M</button>
+        <button id="backspace">
+          <i class="fa fa-backspace"></i>
+        </button>
+      </div>
+    </div>
+    
   </body>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="{% static '/js/script.js' %}"></script>
