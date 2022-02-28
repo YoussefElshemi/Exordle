@@ -25,9 +25,6 @@ SECRET_KEY = 'django-insecure-(9@fi6ypyq9l&#x@qlpl1*s0bmr@0oyr5-c3vi8ydf+)@l@=n)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -76,11 +73,8 @@ WSGI_APPLICATION = 'exordle.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Exordle',
-        'USER': 'django',
-        'PASSWORD': 'django',
-        'HOST': '35.189.68.76'
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
