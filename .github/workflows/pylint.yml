@@ -24,4 +24,4 @@ jobs:
         pip install -r requirements.txt
     - name: Analysing the code with pylint
       run: |
-        pylint $(git ls-files '*.py') --disable C0114,C0115,C0116,C0415,W0212,W0611
+        pylint $(git ls-files '*.py') --disable C0103,C0114,C0115,C0116,C0415,W0212,W0611
