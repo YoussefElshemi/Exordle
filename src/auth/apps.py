@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 
 
-class GameConfig(AppConfig):
+class AuthConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'game'
+    name = 'auth'
+    label = 'custom_auth'

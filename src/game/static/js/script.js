@@ -88,7 +88,7 @@ async function hintButton() {
     }
 
     $.ajax({
-      url: "/qr",
+      url: "/qr/",
       method: "POST",
       data,
       success: async ({ svg }) => {
@@ -163,7 +163,7 @@ async function submitGuess(form, nextParent) {
 
   $.ajax({
     type: "POST",
-    url: "/check",
+    url: "/check/",
     data,
     success: async responseJSON => {
       for (const input of form) {
