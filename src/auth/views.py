@@ -5,7 +5,7 @@ def login(request):
     if request:
         response = redirect('/microsoft/to-auth-redirect/?next=play')
         return response
-    
+
     return None
 
 def logout(request):
