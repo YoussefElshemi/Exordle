@@ -17,10 +17,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GameUser',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, 
+                                           primary_key=True, 
+                                           serialize=False, 
+                                           verbose_name='ID')),
                 ('points', models.IntegerField(default=0)),
                 ('wins', models.IntegerField(default=0)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, 
+                                              to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]
