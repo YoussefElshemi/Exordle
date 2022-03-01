@@ -15,6 +15,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+SITE_ID = 1
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -28,13 +29,16 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = [
-    'game.apps.GameConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'microsoft_auth',
+    'auth',
+    'game',
 ]
 
 MIDDLEWARE = [
@@ -60,10 +64,24 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'microsoft_auth.context_processors.microsoft',
             ],
         },
     },
 ]
+
+AUTHENTICATION_BACKENDS = [
+    'microsoft_auth.backends.MicrosoftAuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend'
+]
+
+MICROSOFT_AUTH_CLIENT_ID = '7765f92d-13bf-49df-b3db-819dfab8837b'
+
+MICROSOFT_AUTH_CLIENT_SECRET = 'mAG7Q~IwYIJY01RWMLe4V6XWnlp42owM__eh5'
+
+MICROSOFT_AUTH_TENANT_ID = '912a5d77-fb98-4eee-af32-1334d8f04a53'
+
+MICROSOFT_AUTH_LOGIN_TYPE = 'ma'
 
 WSGI_APPLICATION = 'exordle.wsgi.application'
 
