@@ -1,4 +1,5 @@
 {% load static %}
+{% load game_extras %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,12 +14,13 @@
   </head>
   <body class="container">
     <div class="parent">
-      <div id="forms">{% for i in range %}
+      <div id="forms">{% for i in guess_range %}
         <form id="{{ i }}" autocomplete="off">
           {% csrf_token %}
           <input type="hidden" name="guess" value="{{ i }}">
-          <div class="word">{% for j in word_range %}
-            <input inputmode='none' type="text" name="{{ j }}" maxlength="1" {% if i != 1 %}disabled{% endif %}>{% endfor %}
+          <div class="word">{% if guesses|exists:i %}{% for j in guesses|get:i %}
+            <input inputmode='none' type="text" name="{{ forloop.counter }}" value="{{ j.upper }}" maxlength="1" disabled>{%endfor %}{% else %}{% for j in word_range %}
+            <input inputmode='none' type="text" name="{{ j }}" maxlength="1" {% if i|add:"-1" != guesses|length %}disabled{% endif %}>{% endfor %}{% endif %}
           </div>
         </form>{% endfor %}
       </div>

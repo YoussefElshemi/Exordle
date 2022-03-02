@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'game',
 ]
 
+APPEND_SLASH = True
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

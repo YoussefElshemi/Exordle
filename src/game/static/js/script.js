@@ -1,23 +1,41 @@
 const forms = document.getElementById("forms").children;
 
-document.addEventListener("keydown", async () => {
+document.addEventListener("keydown", async ({ key }) => {
   if (document.activeElement.nodeName === "BODY") {
     if (!forms[0].children[2].children[0].value) {
       forms[0].children[2].children[0].focus();
     } else {
-      const element = getRecentElement();
-      if (element.value) {
-        const previousParent = element.parentElement.previousElementSibling;
+      const currentPosition = getRecentElement();
+      if (key === "Backspace") {
+        if (!(currentPosition.previousElementSibling && currentPosition.value.length && currentPosition.disabled))  {
+          const previousForm = currentPosition.parentElement.parentElement.previousElementSibling;
+          const newCurrentPosition = previousForm.children[2].children[previousForm.children[2].children.length - 1];
+            
+          if (!newCurrentPosition.disabled) {
+            newCurrentPosition.value = "";
+            return newCurrentPosition.focus();
+          }
+        } else {
+          currentPosition.value = "";
+          return currentPosition.focus();
+        }
+          
+        currentPosition.previousElementSibling.value = "";
+        return currentPosition.previousElementSibling.focus();
+      }
+      
+      if (currentPosition.value) {
+        const previousParent = currentPosition.parentElement.previousElementSibling;
         if (previousParent) {
           await sleep(1);
           return previousParent.children[previousParent.length - 1].focus();
         } else {
           await sleep(1);
-          return element.previousElementSibling.focus();
+          return currentPosition.previousElementSibling.focus();
         }
       }
 
-      element.focus();
+      currentPosition.focus();
     }
   }
 });
@@ -131,11 +149,19 @@ for (const row of keyboard.children) {
 
       if (input.id.length > 1) {
         if (input.id === "backspace") {
-          if (!currentPosition.previousElementSibling && !currentPosition.value)  {
+          if (!(currentPosition.previousElementSibling && currentPosition.value.length && currentPosition.disabled))  {
             const previousForm = currentPosition.parentElement.parentElement.previousElementSibling;
-            return previousForm.children[2].focus();
+            const newCurrentPosition = previousForm.children[2].children[previousForm.children[2].children.length - 1];
+              
+            if (!newCurrentPosition.disabled) {
+              newCurrentPosition.value = "";
+              return newCurrentPosition.focus();
+            }
+          } else {
+            currentPosition.value = "";
+            return currentPosition.focus();
           }
-          
+            
           currentPosition.previousElementSibling.value = "";
           return currentPosition.previousElementSibling.focus();
         }

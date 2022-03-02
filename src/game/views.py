@@ -1,9 +1,11 @@
+from datetime import datetime
 import random
 from io import BytesIO
 import qrcode
 import qrcode.image.svg
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
+from .models import Guesses, Words
 
 def index(request):
     context = {
@@ -14,13 +16,16 @@ def index(request):
 
 def play(request):
     if request.user.is_authenticated:
-        word = get_word()
+        word = str(Words.get_word())
+        guesses = Guesses.objects.filter(user=request.user, word=word, day_of_guess=datetime.now())
+        
         length = len(word) + 1
 
         context = {
             'user': request.user,
+            'guesses': guesses,
             'word_range': range(1, length),
-            'range': range(1, length + 1)
+            'guess_range': range(1, length + 1)
         }
 
         return render(request, 'game/play.html', context)
@@ -29,30 +34,12 @@ def play(request):
 
 def check(request):
     if request.method == 'POST' and request.user.is_authenticated:
-        word = get_word()
-        request.POST._mutable = True
-        request.POST.pop('guess')
-        request.POST.pop('csrfmiddlewaretoken')
-        request.POST._mutable = False
-
-        data = {}
-        for position, value in request.POST.items():
-            idx = int(position) - 1
-            if word[idx] == value.upper():
-                data[position] = 'perfect'
-                word = word.replace(value.upper(), ' ', 1)
-            elif value.upper() in word:
-                data[position] = 'correct'
-                word = word.replace(value.upper(), ' ', 1)
-            else:
-                data[position] = 'wrong'
-
+        word = Words.get_word()
+        data = word.guess(request, request.POST.dict())
+        
         return JsonResponse(data)
 
     return None
-
-def get_word():
-    return 'FORUM'
 
 def qr_code(request):
     if request.method == 'POST':
