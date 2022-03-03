@@ -1,19 +1,35 @@
 const forms = document.getElementById("forms").children;
 
+// if key is pressed on site
 document.addEventListener("keydown", async ({ key }) => {
   if (document.activeElement.nodeName === "BODY") {
+
+    // if it is first entry, focus first box
     if (!forms[0].children[2].children[0].value) {
       forms[0].children[2].children[0].focus();
     } else {
+
+      // backspace across multiple element boxes
       const currentPosition = getRecentElement();
       if (key === "Backspace") {
         if (!(currentPosition.previousElementSibling && currentPosition.value.length && currentPosition.disabled))  {
           const previousForm = currentPosition.parentElement.parentElement.previousElementSibling;
-          const newCurrentPosition = previousForm.children[2].children[previousForm.children[2].children.length - 1];
-            
-          if (!newCurrentPosition.disabled) {
-            newCurrentPosition.value = "";
-            return newCurrentPosition.focus();
+          if (previousForm) {
+            const newCurrentPosition = previousForm.children[2].children[previousForm.children[2].children.length - 1];
+              
+            // only delete if element is editable
+            if (!newCurrentPosition.disabled) {
+              newCurrentPosition.value = "";
+              return newCurrentPosition.focus();
+            }
+          } else {
+            const newCurrentPosition = currentPosition.previousElementSibling;
+              
+            // only delete if element is editable
+            if (!newCurrentPosition.disabled) {
+              newCurrentPosition.value = "";
+              return newCurrentPosition.focus();
+            }
           }
         } else {
           currentPosition.value = "";
@@ -151,11 +167,22 @@ for (const row of keyboard.children) {
         if (input.id === "backspace") {
           if (!(currentPosition.previousElementSibling && currentPosition.value.length && currentPosition.disabled))  {
             const previousForm = currentPosition.parentElement.parentElement.previousElementSibling;
-            const newCurrentPosition = previousForm.children[2].children[previousForm.children[2].children.length - 1];
-              
-            if (!newCurrentPosition.disabled) {
-              newCurrentPosition.value = "";
-              return newCurrentPosition.focus();
+            if (previousForm) {
+              const newCurrentPosition = previousForm.children[2].children[previousForm.children[2].children.length - 1];
+                
+              // only delete if element is editable
+              if (!newCurrentPosition.disabled) {
+                newCurrentPosition.value = "";
+                return newCurrentPosition.focus();
+              }
+            } else {
+              const newCurrentPosition = currentPosition.previousElementSibling;
+                
+              // only delete if element is editable
+              if (!newCurrentPosition.disabled) {
+                newCurrentPosition.value = "";
+                return newCurrentPosition.focus();
+              }
             }
           } else {
             currentPosition.value = "";
@@ -192,11 +219,14 @@ async function submitGuess(form, nextParent) {
     url: "/check/",
     data,
     success: async responseJSON => {
+      let won = true;
+
       for (const input of form) {
         input.disabled = true;
       }
 
       for (const [position, value] of Object.entries(responseJSON)) {
+        if (["correct", "wrong"].includes(value)) won = false;
 
         const idx = Number(position) - 1;
         const inputElement = form.children[2].children[idx];
@@ -222,6 +252,46 @@ async function submitGuess(form, nextParent) {
           if (currentClass === "wrong" && value === "correct") {
             keyboardElement.classList.remove(currentClass);
             keyboardElement.classList.add(value);
+          }
+        }
+      }
+
+      if (won) {
+        document.body.removeChild(keyboard);
+        const hintButton = document.getElementById("hint");
+        hintButton.innerText = "CHECK IN";
+        return hintButton.onclick = () => {
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(({ coords: { latitude, longitude } }) => {
+              const data = {
+                latitude,
+                longitude,
+                csrfmiddlewaretoken: getCookie("csrftoken")
+              }
+
+              $.ajax({
+                type: "POST",
+                url: "/check_in",
+                data,
+                success: async ({ success, distance }) => {
+                  if (success) {
+                    alert("You are in the right place");
+                  } else {
+                    alert(`You are ${distance}m from the correct place`);
+                  }
+                },
+                error: console.log
+              });
+            }, (err) => {
+              console.log(err);
+              alert("Please enable GPS");
+            }, {
+              maximumAge: 0, 
+              timeout: 5000, 
+              enableHighAccuracy: true
+            });
+          } else {
+            alert("Please enable GPS");
           }
         }
       }

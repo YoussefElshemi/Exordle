@@ -2,6 +2,7 @@ from datetime import date
 from django.contrib.auth.models import User
 from django.db import models
 
+# location model
 class Locations(models.Model):
     location_id = models.AutoField(primary_key=True)
     latitude = models.FloatField(default=0)
@@ -12,6 +13,7 @@ class Locations(models.Model):
         verbose_name = "Location"
         verbose_name_plural = "Locations"
 
+# word model
 class Words(models.Model):
     word = models.TextField(primary_key=True, max_length=20)
     last_used = models.DateField()
@@ -22,18 +24,26 @@ class Words(models.Model):
     def __str__(self):
         return self.word
     
+    # get the last last-used word 
     def get_word():
         return Words.objects.all().order_by('last_used').first()
     
     def guess(self, request, attempt, save=True):
         
-        guess_num = attempt.pop('guess')
-        attempt.pop('csrfmiddlewaretoken')
+        # weather or not this is coming straight from a request or not
+        if save:
+            guess_num = attempt.pop('guess')
+            attempt.pop('csrfmiddlewaretoken')
         
         correct = True
         word = str(self)
         guess_attempt = ""
         data = {}
+        
+        # assign letters their respective value based on correctness
+        # perfect = green
+        # correct = yellow
+        # wrong = grey
         
         for position, value in attempt.items():
             guess_attempt += value
@@ -49,6 +59,7 @@ class Words(models.Model):
                 correct = False
                 data[position] = 'wrong'
         
+        # if we're saving the guess, insert into database
         if save:
             guess_item = Guesses.objects.create(
                 user=request.user, 
@@ -67,6 +78,7 @@ class Words(models.Model):
         verbose_name = "Word"
         verbose_name_plural = "Words"
 
+# hint model
 class Hints(models.Model):
     hint_id = models.AutoField(primary_key=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="creator")
@@ -82,6 +94,7 @@ class Hints(models.Model):
         verbose_name = "Hint"
         verbose_name_plural = "Hints"
 
+# guess model
 class Guesses(models.Model):
     guess_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
