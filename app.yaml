@@ -1,5 +1,6 @@
 # [START django_app]
 runtime: python39
+entrypoint: gunicorn -b :$PORT main:app
 handlers:
 # Tel GAE where are Django static assets located
 - url: /static
@@ -7,4 +8,6 @@ handlers:
 # Route everything else to the main app
 - url: /.*
   script: auto
+env_variables:
+    APPENGINE_URL: https://neural-period-340613.nw.r.appspot.com
 # [END django_app]

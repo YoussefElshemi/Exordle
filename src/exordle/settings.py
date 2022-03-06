@@ -51,7 +51,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'exordle.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATES = [
     {
@@ -83,7 +83,7 @@ MICROSOFT_AUTH_TENANT_ID = '912a5d77-fb98-4eee-af32-1334d8f04a53'
 
 MICROSOFT_AUTH_LOGIN_TYPE = 'ma'
 
-WSGI_APPLICATION = 'exordle.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 
 # Database
@@ -139,4 +139,4 @@ STATIC_ROOT = 'static'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-ALLOWED_HOSTS = ['neural-period-340613.nw.r.appspot.com']
+ALLOWED_HOSTS = ['neural-period-340613.nw.r.appspot.com','127.0.0.1','localhost','0.0.0.0']
