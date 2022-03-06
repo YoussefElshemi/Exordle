@@ -1,2 +1,2 @@
-from exordle.wsgi import application
+from src.exordle.wsgi import application
 app = application
