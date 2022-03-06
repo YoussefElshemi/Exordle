@@ -1,0 +1,10 @@
+# [START django_app]
+runtime: python39
+handlers:
+# Tel GAE where are Django static assets located
+- url: /static
+  static_dir: static/
+# Route everything else to the main app
+- url: /.*
+  script: auto
+# [END django_app]
