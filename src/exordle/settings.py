@@ -51,7 +51,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'urls'
+ROOT_URLCONF = 'exordle.urls'
 
 TEMPLATES = [
     {
@@ -83,7 +83,7 @@ MICROSOFT_AUTH_TENANT_ID = '912a5d77-fb98-4eee-af32-1334d8f04a53'
 
 MICROSOFT_AUTH_LOGIN_TYPE = 'ma'
 
-WSGI_APPLICATION = 'wsgi.application'
+WSGI_APPLICATION = 'exordle.wsgi.application'
 
 
 # Database
