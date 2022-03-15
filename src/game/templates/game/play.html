@@ -19,8 +19,8 @@
           {% csrf_token %}
           <input type="hidden" name="guess" value="{{ i }}">
           <div class="word">{% if guesses|exists:i %}{% for j in guesses|get:i %}
-            <input inputmode='none' type="text" name="{{ forloop.counter }}" value="{{ j.upper }}" maxlength="1" disabled>{%endfor %}{% else %}{% for j in word_range %}
-            <input inputmode='none' type="text" name="{{ j }}" maxlength="1" {% if i|add:"-1" != guesses|length %}disabled{% endif %}>{% endfor %}{% endif %}
+            <input inputmode="none" type="text" name="{{ forloop.counter }}" value="{{ j.upper }}" class="{{ css_guesses|get_css:i|get:forloop.counter }}" maxlength="1" disabled>{%endfor %}{% else %}{% for j in word_range %}
+            <input inputmode="none" type="text" name="{{ j }}" maxlength="1" {% if i|add:"-1" != guesses|length %}disabled{% endif %}>{% endfor %}{% endif %}
           </div>
         </form>{% endfor %}
       </div>

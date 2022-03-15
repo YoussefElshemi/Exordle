@@ -22,13 +22,20 @@ def play(request):
         
         # get word of the day and previous guesses for this word if there are any
         word = Words.get_word()
-        guesses = Guesses.objects.filter(user=request.user, word=word, day_of_guess=datetime.now())      
+        guesses = Guesses.objects.filter(user=request.user, word=word, day_of_guess=datetime.now())  
+        css_guesses = []
+        
+        for guess in guesses:
+            guess_object = make_guess(guess.guess)
+            response = word.guess(request, guess_object, False)
+            css_guesses.append(list(response.values()))
           
         length = len(str(word)) + 1
-
+        
         context = {
             'user': request.user,
             'guesses': guesses,
+            'css_guesses': css_guesses,
             'word_range': range(1, length),
             'guess_range': range(1, length + 1)
         }
@@ -103,3 +110,10 @@ def get_distance(first_location, second_location):
     r = 6378137
     
     return c * r
+
+def make_guess(guess):
+    response = {}
+    for i in range(len(guess)):
+        response[i + 1] = guess[i]
+        
+    return response

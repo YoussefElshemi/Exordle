@@ -30,7 +30,7 @@ class Words(models.Model):
     
     def guess(self, request, attempt, save=True):
         
-        # weather or not this is coming straight from a request or not
+        # whether or not this is coming straight from a request or not
         if save:
             guess_num = attempt.pop('guess')
             attempt.pop('csrfmiddlewaretoken')
