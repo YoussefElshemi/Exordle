@@ -26,14 +26,23 @@ class Words(models.Model):
     
     # get the last last-used word 
     def get_word():
-        return Words.objects.all().order_by('last_used').first()
+        return Words.objects.all().order_by("last_used").first()
+    
+    def guess_letter(self, letter):
+        word = str(self)
+        
+        if letter in word:
+            return "correct"
+        else:
+            return "wrong"
+
     
     def guess(self, request, attempt, save=True):
         
         # whether or not this is coming straight from a request or not
         if save:
-            guess_num = attempt.pop('guess')
-            attempt.pop('csrfmiddlewaretoken')
+            guess_num = attempt.pop("guess")
+            attempt.pop("csrfmiddlewaretoken")
         
         correct = True
         word = str(self)
@@ -49,15 +58,15 @@ class Words(models.Model):
             guess_attempt += value
             idx = int(position) - 1
             if word[idx] == value.upper():
-                data[position] = 'perfect'
-                word = word.replace(value.upper(), ' ', 1)
+                data[position] = "perfect"
+                word = word.replace(value.upper(), " ", 1)
             elif value.upper() in word:
                 correct = False
-                data[position] = 'correct'
-                word = word.replace(value.upper(), ' ', 1)
+                data[position] = "correct"
+                word = word.replace(value.upper(), " ", 1)
             else:
                 correct = False
-                data[position] = 'wrong'
+                data[position] = "wrong"
         
         # if we're saving the guess, insert into database
         if save:
@@ -81,8 +90,9 @@ class Words(models.Model):
 # hint model
 class Hints(models.Model):
     hint_id = models.AutoField(primary_key=True)
+    hint_code = models.TextField(default=None)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="creator")
-    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="receiver")
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="receiver", null=True, blank=True)
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=None)
     timestamp = models.DateTimeField()
     hint = models.TextField()
@@ -93,7 +103,7 @@ class Hints(models.Model):
     class Meta:
         verbose_name = "Hint"
         verbose_name_plural = "Hints"
-
+        
 # guess model
 class Guesses(models.Model):
     guess_id = models.AutoField(primary_key=True)

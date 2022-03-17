@@ -1,12 +1,14 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
+import string
 import math
 from io import BytesIO
 import qrcode
 import qrcode.image.svg
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
-from .models import Guesses, Words
+from django.utils import timezone
+from .models import Guesses, Hints, Words
 
 def index(request):
     context = {
@@ -22,13 +24,26 @@ def play(request):
         
         # get word of the day and previous guesses for this word if there are any
         word = Words.get_word()
-        guesses = Guesses.objects.filter(user=request.user, word=word, day_of_guess=datetime.now())  
+        guesses = Guesses.objects.filter(user=request.user, word=word, day_of_guess=datetime.now()) 
+        hints = Hints.objects.filter(receiver=request.user, word=word, 
+                                     timestamp__gte=timezone.now().replace(hour=0, minute=0, second=0), 
+                                     timestamp__lte=timezone.now().replace(hour=23, minute=59, second=59))
+        
         css_guesses = []
+        css_keyboard = []
         
         for guess in guesses:
-            guess_object = make_guess(guess.guess)
+            guess_object = make_guess(str(guess))
             response = word.guess(request, guess_object, False)
             css_guesses.append(list(response.values()))
+            
+            for idx, result in response.items():
+                css_keyboard.append({ "letter": str(word)[idx - 1], "result": result })   
+        
+        for hint in hints:
+            for letter in str(hint):
+                css_keyboard.append({ "letter": letter, "result": word.guess_letter(letter) })
+
           
         length = len(str(word)) + 1
         
@@ -36,6 +51,7 @@ def play(request):
             'user': request.user,
             'guesses': guesses,
             'css_guesses': css_guesses,
+            'css_keyboard': css_keyboard,
             'word_range': range(1, length),
             'guess_range': range(1, length + 1)
         }
@@ -58,11 +74,23 @@ def check(request):
     return None
 
 def qr_code(request):
-    if request.method == 'POST':
-        
+    # ensure user is logged in
+    if request.method == 'POST' and request.user.is_authenticated:
+            
         # generate a random 6 digit code
         code = str(random.randint(0, 999999))
         padded_code = code.zfill(6)
+        hint = ''.join(random.sample(string.ascii_uppercase, 2))
+        
+        hint_object = Hints.objects.create(
+            hint_code=padded_code,
+            creator=request.user,
+            word=Words.get_word(),
+            timestamp=timezone.now(),
+            hint=hint
+        )
+        
+        hint_object.save()
 
         # generate and return SVG for QR code representing the 6 digit code
         factory = qrcode.image.svg.SvgPathImage
@@ -70,12 +98,14 @@ def qr_code(request):
         stream = BytesIO()
         img.save(stream)
 
-        return JsonResponse({ 'svg': stream.getvalue().decode() })
+        return JsonResponse({ 'svg': stream.getvalue().decode(), 'code': padded_code })
 
     return None
 
 def check_in(request):
-    if request.method == "POST":
+    # ensure user is logged in
+    if request.method == 'POST' and request.user.is_authenticated:
+        
         # get word of the day's location
         first_location = Words.get_word().location
         
@@ -93,6 +123,58 @@ def check_in(request):
         else:
             return JsonResponse({ "success": False, "distance": distance - first_location.radius })
         
+    return None
+
+def hint(request):
+    # ensure user is logged in
+    if request.method == 'POST' and request.user.is_authenticated:
+        code = request.POST.get("code")
+        
+        try:
+            # get hint used within last 5 minutes
+            used_hint = Hints.objects.get(receiver=request.user, timestamp__gte=(timezone.now() - timedelta(minutes=5)))
+            
+            time = timedelta(minutes=5) - (timezone.now() - used_hint.timestamp)
+            time = ":".join(str(time).split(".")[0].split(":")[1:])
+                
+            return JsonResponse({ "success": False, "message": f"You must wait {time} before you can use another hint" })
+
+        except:
+            # if no hint is used in last 5 minutes
+            try:
+                hint = Hints.objects.get(hint_code=code, timestamp__gte=(timezone.now() - timedelta(seconds=10)))
+        
+                if hint:
+                    if hint.receiver:
+                        return JsonResponse({ "success": False, "message": "Code has been used before" })
+                        
+                    if hint.creator == request.user:
+                        return JsonResponse({ "success": False, "message": "You cannot use your own code" })
+                    
+                    # hints given to user throughout the day 
+                    hints = Hints.objects.filter(receiver=request.user, word=hint.word, 
+                                     timestamp__gte=timezone.now().replace(hour=0, minute=0, second=0), 
+                                     timestamp__lte=timezone.now().replace(hour=23, minute=59, second=59))
+                    
+                    # if user used hint from the user giving them hint before
+                    for hint_object in hints:
+                        if hint_object.creator == hint.creator:
+                            return JsonResponse({ "success": False, "message": "You cannot redeem a hint from this user again until tomorrow" })
+                           
+                    # use hint up                     
+                    hint.receiver = request.user
+                    hint.save()
+                    
+                    hints = list(str(hint))
+                    data = []
+                        
+                    for letter in hints:
+                        data.append({ "letter": letter, "result": Words.get_word().guess_letter(letter) })
+                    return JsonResponse({ "success": True, "message": "Successfully redeemed hint", "data": data })
+            except:
+                return JsonResponse({ "success": False, "message": "Invalid Hint Code" })
+            
+    
     return None
 
 # function to calculate distance between to co-ordinates
