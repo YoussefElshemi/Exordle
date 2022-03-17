@@ -102,17 +102,95 @@ for (const form of forms) {
     }
   });
 }
+const hintForm = document.getElementById("submitHint");
+
+function submitHint(e) {  
+  e.preventDefault();
+
+  const data = {
+    csrfmiddlewaretoken: getCookie("csrftoken"),
+    code: hintForm.children[1].value
+  }
+
+  $.ajax({
+    url: "/hint/",
+    method: "POST",
+    data,
+    success: async (response) => {
+      const hint = document.getElementById("messageText");
+      hint.innerText = response.message;
+
+      if (response.success) {
+        for (const hintObject of response.data) {
+          const keyboardElement = document.getElementById(hintObject.letter.toLowerCase());
+          
+          if (keyboardElement && !keyboardElement.classList.length) {
+            keyboardElement.classList.add(hintObject.result);
+          } else {
+            const currentClass = keyboardElement.classList[0];
+        
+            if (currentClass === "correct" && hintObject.result === "perfect") {
+              keyboardElement.classList.remove(currentClass);
+              keyboardElement.classList.add(hintObject.result);
+            } 
+        
+            if (currentClass === "wrong" && hintObject.result === "correct") {
+              keyboardElement.classList.remove(currentClass);
+              keyboardElement.classList.add(hintObject.result);
+            }
+          }
+
+        }
+
+        hintForm.children[1].value = "";
+        return closeModal();
+      } else {
+        hint.classList.add("error");
+      }
+    },
+    error: console.log
+  });
+
+  return false;
+}
 
 async function hintButton() {
   const modalElement = document.getElementById("myForm");
-
   if (modalElement.style.display === "block") return closeModal();
 
-  const form = document.getElementById("submitHint");
-  const divElement = document.createElement("div");
+  if (modalElement.contains(document.getElementById("hintDiv"))) {
+    modalElement.removeChild(document.getElementById("hintDiv"));
+  }
 
-  divElement.setAttribute("id", "svg");
-  modalElement.insertBefore(divElement, form);
+  if (modalElement.contains(document.getElementById("hintText"))) {
+    modalElement.removeChild(document.getElementById("hintText"));
+  }
+
+  if (modalElement.contains(document.getElementById("messageText"))) {
+    modalElement.removeChild(document.getElementById("messageText"));
+  }
+
+
+  const divElement = document.createElement("div");
+  divElement.setAttribute("id", "hintDiv");
+  modalElement.insertBefore(divElement, hintForm);
+
+  const codeElement = document.createElement("h1");
+  const codeTextNode = document.createTextNode("");
+
+  codeElement.setAttribute("id", "hintText");
+  codeElement.classList.add("title");
+  codeElement.appendChild(codeTextNode);
+  modalElement.insertBefore(codeElement, hintForm);
+
+  const messageElement = document.createElement("h4");
+  const messageTextNode = document.createTextNode("");
+
+  messageElement.setAttribute("id", "messageText");
+  messageElement.appendChild(messageTextNode);
+  messageElement.classList.add("title");
+  modalElement.insertBefore(messageElement, hintForm);
+
   modalElement.style.display = "block";    
 
 
@@ -125,8 +203,11 @@ async function hintButton() {
       url: "/qr/",
       method: "POST",
       data,
-      success: async ({ svg }) => {
+      success: async ({ svg, code }) => {
+        const hintText = document.getElementById("hintText");
+
         divElement.innerHTML = svg.replace(/58mm/g, "100%");
+        hintText.innerText = "CODE: " + code
       },
       error: console.log
     });
@@ -271,7 +352,7 @@ async function submitGuess(form, nextParent) {
 
               $.ajax({
                 type: "POST",
-                url: "/check_in",
+                url: "/check_in/",
                 data,
                 success: async ({ success, distance }) => {
                   if (success) {
@@ -306,6 +387,25 @@ async function submitGuess(form, nextParent) {
     },
     error: console.log
   });
+}
+
+for (const cssKey of cssKeyboard) {
+  const keyboardElement = document.getElementById(cssKey.letter.toLowerCase());
+  if (keyboardElement && !keyboardElement.classList.length) {
+    keyboardElement.classList.add(cssKey.result);
+  } else {
+    const currentClass = keyboardElement.classList[0];
+
+    if (currentClass === "correct" && cssKey.result === "perfect") {
+      keyboardElement.classList.remove(currentClass);
+      keyboardElement.classList.add(cssKey.result);
+    } 
+
+    if (currentClass === "wrong" && cssKey.result === "correct") {
+      keyboardElement.classList.remove(currentClass);
+      keyboardElement.classList.add(cssKey.result);
+    }
+  }
 }
 
 async function sleep(timeout=2000) {
