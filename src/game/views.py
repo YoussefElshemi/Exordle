@@ -38,7 +38,7 @@ def play(request):
             css_guesses.append(list(response.values()))
             
             for idx, result in response.items():
-                css_keyboard.append({ "letter": str(word)[idx - 1], "result": result })   
+                css_keyboard.append({ "letter": str(guess)[idx - 1], "result": result })   
         
         for hint in hints:
             for letter in str(hint):
