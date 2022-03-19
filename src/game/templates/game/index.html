@@ -6,20 +6,20 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{% static '/game/img/logo.png' %}">
-    <link rel="stylesheet" href="{% static '/game/css/style.css' %}">
+    <link rel="icon" href="{% static '/img/logo.png' %}">
+    <link rel="stylesheet" href="{% static '/css/game.css' %}">
+    <link rel="stylesheet" href="{% static '/css/navbar.css' %}">
+
     <script src="https://kit.fontawesome.com/aac2e10b00.js" crossorigin="anonymous"></script>
     <title>Exordle - A Daily Word Game</title>
   </head>
   <body>
     <div class="container">
-      <img src="{% static '/game/img/banner.png' %}" width="50%" alt="exordle banner">
+      {% include './navbar.html' %}
+      <img src="{% static '/img/banner.png' %}" width="50%" alt="exordle banner">
       <h1>A DAILY WORD GAME!</h1>
-      <div class="play">{% if user.is_authenticated %}
-        <button onclick="window.location.href='/play'" class="green">PLAY</button>
-        <button onclick="window.location.href='/auth/logout'" class="green">LOG OUT</button>{% else %}
-        <button onclick="window.location.href='/auth/login'" class="green">LOG IN</button>{% endif %}
-      </div>
     </div>
   </body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="{% static '/game/js/navbar.js' %}""></script>
 </html>

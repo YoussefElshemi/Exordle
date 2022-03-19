@@ -1,0 +1,226 @@
+html, body {
+  background-color: #121213;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.word > * {
+  display: inline-block;
+  font-size: 200%;
+  width: 50px;
+  height: 50px;
+  color: white;
+  border: 1px solid #3A3A3C;
+  background-color: transparent;
+  text-align: center;
+  box-shadow: 0 0 8px rgba(0,0,0,0.25);
+  caret-color: transparent;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.word:focus {
+  animation-name: zoom;
+  animation-duration: 200ms;
+}
+
+.result {
+  animation-name: shake;
+  animation-duration: 500ms;
+}
+
+.parent {
+  position: fixed;
+  left: 0; right: 0;
+  top: 0; bottom: 20%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.parent > div > form {
+  padding: 3px 3px;
+}
+
+.container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+
+.container > img {
+  position: absolute;
+  left: 0; right: 0;
+  top: 0; bottom: 0;
+  margin: auto;
+  text-align: center;
+}
+
+.container > h1 {
+  font-size: 2.3vw;
+  margin: auto;
+  vertical-align: middle;
+  text-align: center;
+  font-weight: bolder;
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+}
+
+.title {
+  margin: 0 0 5% 0;
+  vertical-align: middle;
+  text-align: center;
+  font-weight: bolder;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.container > .play {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.container > .hint {
+  margin: 0;
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  -ms-transform: translate(-50%, -70%);
+  transform: translate(-50%, -70%);
+}
+
+.green {
+  background-color: #538D4E;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+.success {
+  color: #538D4E;
+}
+
+.error {
+  color: red;
+}
+
+.perfect {
+  background-color: #538D4E !important;
+}
+
+.correct {
+  background-color: #B59F3B !important;
+}
+
+.wrong {
+  background-color: #3A3A3C !important;
+}
+
+@keyframes zoom {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.15); }
+}
+
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.form-popup {
+  display: none;
+  position: fixed;
+  width: 30%;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+  background-color: white;
+}
+
+.form-container {
+  padding: 10px;
+  background-color: white;
+}
+
+.form-container input {
+  width: 90%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+}
+
+.close {
+  position: absolute;
+  right: 5px;
+  top: 0;
+  color: #000;
+  font-size: 50px;
+  font-weight: bolder;
+}
+
+.close:hover,
+.close:focus {
+  cursor: pointer;
+}
+
+@media screen and (max-width: 600px) {
+  .form-popup {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.keyboard {
+  position: fixed;
+  left: 50%;
+  bottom: 2%;
+  transform: translate(-50%, -2%);
+  margin: 0 auto;
+}
+
+.keyboard > .row {
+  display: flex; 
+  justify-content: center;
+}
+
+.keyboard > .row > * {
+  font-size: 0.8rem;
+  min-width: 30px;
+  height: 50px;
+  border: none;
+  border-radius: 5px;
+  background-color: #818384;
+  color: white;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 0.7% 0.5%;
+  align-items: center;
+}
