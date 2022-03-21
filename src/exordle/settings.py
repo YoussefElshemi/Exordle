@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'microsoft_auth',
     'auth',
     'game',
-    'map'
+    'map',
+    'leaderboard'
 ]
 
 APPEND_SLASH = True
