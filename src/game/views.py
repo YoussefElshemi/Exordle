@@ -168,7 +168,7 @@ def check_in(request):
                                      timestamp__lte=timezone.now().replace(hour=23, minute=59, second=59))
             
             points = len(str(word)) * 100 + 300
-            points -= guesses.count() * 100
+            points -= (guesses.count() - 1) * 100
             points -= hints.count() * 100
             
             game_user = GameUser.objects.get(user=request.user)
