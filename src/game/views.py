@@ -143,6 +143,15 @@ def check_in(request):
     if request.method == 'POST' and request.user.is_authenticated:
         word = Words.get_word()
         
+        try:
+            CheckIns.objects.get(user=request.user, word=word, day=datetime.now())
+            checked_in = True
+        except:
+            checked_in = False
+            
+        if checked_in:
+            return JsonResponse({ "success": False, "message": "You are already checked in" })
+        
         user_location = {
             "latitude": float(request.POST.get("latitude")),
             "longitude": float(request.POST.get("longitude"))
@@ -171,7 +180,8 @@ def check_in(request):
             
             return JsonResponse({ "success": True, "points": points }) 
         else:
-            return JsonResponse({ "success": False, "distance": distance - word.location.radius })
+            message = f"Successfully checked in, received {points} points"
+            return JsonResponse({ "success": False, "message": message })
         
     return None
 

@@ -324,7 +324,7 @@ async function submitGuess(form, nextParent) {
 
       delete responseJSON.success;
       delete responseJSON.valid;
-      
+
       for (const input of form) {
         input.disabled = true;
       }
@@ -390,13 +390,13 @@ function checkIn() {
         type: "POST",
         url: "/check_in/",
         data,
-        success: async ({ success, distance, points }) => {
+        success: async ({ success, message, points }) => {
           const hintDiv = document.getElementsByClassName("hint")[0];
           const messageElement = document.getElementById("checkInText");
           hintDiv.classList.add("middle");
 
           if (success) {
-            messageElement.textContent = `Successfully checked in, received ${points} points`;
+            messageElement.textContent = message;
             hintDiv.removeChild(document.getElementById("hint"));
 
             $.ajax({

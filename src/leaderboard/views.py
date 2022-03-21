@@ -3,7 +3,7 @@ from django.shortcuts import render
 from auth.models import GameUser
 
 def index(request):
-    game_users = GameUser.objects.all().order_by('points').reverse()
+    game_users = GameUser.objects.filter(points__gte=1).order_by('points').reverse()
     users = []
     
     for game_user in game_users:
