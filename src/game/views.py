@@ -177,11 +177,10 @@ def check_in(request):
             game_user.save()
             
             CheckIns.objects.create(user=request.user, word=word, points=points, day=datetime.now())
-            
-            return JsonResponse({ "success": True, "points": points }) 
+
+            return JsonResponse({ "success": True, "message": f"Successfully checked in, received {points} points" }) 
         else:
-            message = f"Successfully checked in, received {points} points"
-            return JsonResponse({ "success": False, "message": message })
+            return JsonResponse({ "success": False, "message": f"You are ${round(distance)}m from the correct place" })
         
     return None
 

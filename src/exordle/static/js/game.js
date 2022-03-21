@@ -390,13 +390,13 @@ function checkIn() {
         type: "POST",
         url: "/check_in/",
         data,
-        success: async ({ success, message, points }) => {
+        success: async ({ success, message }) => {
           const hintDiv = document.getElementsByClassName("hint")[0];
           const messageElement = document.getElementById("checkInText");
           hintDiv.classList.add("middle");
 
+          messageElement.textContent = message;
           if (success) {
-            messageElement.textContent = message;
             hintDiv.removeChild(document.getElementById("hint"));
 
             $.ajax({
@@ -410,9 +410,6 @@ function checkIn() {
                 pointsElement.innerText = "Points: " + points;
               }
             })
-          
-          } else {
-            messageElement.textContent = `You are ${Math.round(distance)}m from the correct place`;
           }
         },
         error: console.log
