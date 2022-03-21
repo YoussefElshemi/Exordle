@@ -1,4 +1,6 @@
-from datetime import date
+from datetime import date, timezone
+import os
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -16,7 +18,7 @@ class Locations(models.Model):
 # word model
 class Words(models.Model):
     word = models.TextField(primary_key=True, max_length=20)
-    last_used = models.DateField()
+    date = models.DateField()
     num_correct_guesses = models.IntegerField(default=0)
     num_uses = models.IntegerField(default=0)
     location = models.ForeignKey(Locations, on_delete=models.CASCADE)
@@ -26,7 +28,19 @@ class Words(models.Model):
     
     # get the last last-used word 
     def get_word():
-        return Words.objects.all().order_by("last_used").first()
+        try:
+            return Words.objects.get(date=timezone.now()) # get word of the day
+        except:
+            try:
+                return Words.objects.all()[0] # get first word
+            except:
+                return "BLANK" # if no words, return word as BLANK
+
+    def get_valid_words(self):
+        word_file = open(os.path.join(settings.BASE_DIR, '..', 'res', 'words.txt'), "r")
+        db_words = list(map(str.lower, map(str, Words.objects.all())))
+
+        return db_words + word_file.readlines()
     
     def guess_letter(self, letter):
         word = str(self)
@@ -70,16 +84,19 @@ class Words(models.Model):
         
         # if we're saving the guess, insert into database
         if save:
-            guess_item = Guesses.objects.create(
-                user=request.user, 
-                word=self,
-                guess=guess_attempt.upper(), 
-                guess_num=guess_num, 
-                day_of_guess=date.today(),
-                correct=correct
-            )
+            data["valid"] = f"{guess_attempt.lower()}\n" in self.get_valid_words()
             
-            guess_item.save()
+            if data["valid"]:
+                guess_item = Guesses.objects.create(
+                    user=request.user, 
+                    word=self,
+                    guess=guess_attempt.upper(), 
+                    guess_num=guess_num, 
+                    day_of_guess=date.today(),
+                    correct=correct
+                )
+                
+                guess_item.save()
                 
         return data
 

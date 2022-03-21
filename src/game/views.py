@@ -91,7 +91,7 @@ def check(request):
         
         # get the guess data and return it as JSON
         word = Words.get_word()
-        data = word.guess(request, request.POST.dict())
+        data = word.guess(request, request.POST.dict())    
         
         success = True
         for value in data.values():
@@ -103,7 +103,6 @@ def check(request):
             word.save()
 
         data["success"] = success
-                
         return JsonResponse(data)
 
     return None
@@ -115,7 +114,9 @@ def qr_code(request):
         # generate a random 6 digit code
         code = str(random.randint(0, 999999))
         padded_code = code.zfill(6)
-        hint = ''.join(random.sample(string.ascii_uppercase, 2))
+        hint_length = 3 if request.user.groups.filter(name='Lecturer').exists() else 2
+        
+        hint = ''.join(random.sample(string.ascii_uppercase, hint_length))
         
         hint_object = Hints.objects.create(
             hint_code=padded_code,

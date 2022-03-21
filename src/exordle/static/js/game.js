@@ -308,9 +308,23 @@ async function submitGuess(form, nextParent) {
     url: "/check/",
     data,
     success: async responseJSON => {
-      const won = responseJSON.success;
-      delete responseJSON.success;
+      if (!responseJSON.valid) {
+        for (const input of form) {
+          input.classList.add("result");
+  
+          sleep(200).then(() => {
+            input.classList.remove("result");
+          });
+        }
 
+        return;
+      }
+
+      const won = responseJSON.success;
+
+      delete responseJSON.success;
+      delete responseJSON.valid;
+      
       for (const input of form) {
         input.disabled = true;
       }

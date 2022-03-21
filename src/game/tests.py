@@ -9,7 +9,7 @@ class WordTestCase(TestCase):
     def setUp(self):
         location = Locations.objects.create(latitude=0, longitude=0, radius=0)
         Words.objects.create(word="FORUM", 
-                             last_used=timezone.now(), 
+                             date=timezone.now(), 
                              num_correct_guesses=0, 
                              num_uses=0, 
                              location=location)
@@ -63,7 +63,7 @@ class TestPOSTRequests(TestCase):
         GameUser.objects.create(user=user, points=0, wins=0)
         location = Locations.objects.create(latitude=0, longitude=0, radius=0)
         word = Words.objects.create(word="FORUM", 
-                             last_used=timezone.now(), 
+                             date=timezone.now(), 
                              num_correct_guesses=0, 
                              num_uses=0, 
                              location=location)
@@ -82,7 +82,7 @@ class TestPOSTRequests(TestCase):
         data = { "guess": 1, "csrfmiddlewaretoken": "", "1": "F", "2": "O", "3": "R", "4": "U", "5": "M" }
         
         response = self.client.post("/check/", data)
-        correct_response = { "1": "perfect", "2": "perfect", "3": "perfect", "4": "perfect", "5": "perfect", "success": True }
+        correct_response = { "1": "perfect", "2": "perfect", "3": "perfect", "4": "perfect", "5": "perfect", "valid": True, "success": True }
         
         self.assertEqual(response.json(), correct_response)
         self.assertEqual(Guesses.objects.count(), 1)
