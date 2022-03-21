@@ -38,9 +38,10 @@ class Words(models.Model):
 
     def get_valid_words(self):
         word_file = open(os.path.join(settings.BASE_DIR, '..', 'res', 'words.txt'), "r")
+        word_file = [x.strip() for x in word_file.readlines()]
         db_words = list(map(str.lower, map(str, Words.objects.all())))
 
-        return db_words + word_file.readlines()
+        return db_words + word_file
     
     def guess_letter(self, letter):
         word = str(self)
@@ -84,7 +85,7 @@ class Words(models.Model):
         
         # if we're saving the guess, insert into database
         if save:
-            data["valid"] = f"{guess_attempt.lower()}\n" in self.get_valid_words()
+            data["valid"] = guess_attempt.lower() in self.get_valid_words()
             
             if data["valid"]:
                 guess_item = Guesses.objects.create(
