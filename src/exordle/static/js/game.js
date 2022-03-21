@@ -102,14 +102,16 @@ for (const form of forms) {
     }
   });
 }
+
 const hintForm = document.getElementById("submitHint");
 
-function submitHint(e) {  
-  e.preventDefault();
+function submitHint(e, code) {  
+  if (e) e.preventDefault();
+  if (!code) code = hintForm.children[1].value
 
   const data = {
     csrfmiddlewaretoken: getCookie("csrftoken"),
-    code: hintForm.children[1].value
+    code
   }
 
   $.ajax({
@@ -154,6 +156,48 @@ function submitHint(e) {
   return false;
 }
 
+let html5QrcodeScanner;
+
+async function scanQr() {
+  const modalElement = document.getElementById("myForm");
+  const hintDiv = document.getElementById("hintDiv");
+  const hintText = document.getElementById("hintText");
+  const messageText = document.getElementById("messageText")
+  if (modalElement.contains(hintDiv)) {
+    modalElement.removeChild(hintDiv);
+  }
+
+  if (modalElement.contains(hintText)) {
+    modalElement.removeChild(hintText);
+  }
+
+  if (modalElement.contains(messageText)) {
+    modalElement.removeChild(messageText);
+  }
+
+  const divElement = document.createElement("div");
+  divElement.setAttribute("id", "qrDiv");
+  modalElement.insertBefore(divElement, hintForm);
+  
+  html5QrcodeScanner = new Html5QrcodeScanner("qrDiv", { 
+    fps: 10, 
+    qrbox: {
+      width: 250, 
+      height: 250
+    } 
+  }, false);
+
+  html5QrcodeScanner.render((code) => {
+    modalElement.insertBefore(hintDiv, hintForm);
+    modalElement.insertBefore(hintText, hintForm);
+    modalElement.insertBefore(messageText, hintForm);
+
+    submitHint(null, code);
+    html5QrcodeScanner.clear();
+  });
+
+}
+
 async function hintButton() {
   const modalElement = document.getElementById("myForm");
   if (modalElement.style.display === "block") return closeModal();
@@ -194,7 +238,7 @@ async function hintButton() {
   modalElement.style.display = "block";    
 
 
-  while (modalElement.style.display === "block") {
+  while (modalElement.style.display === "block" && modalElement.contains(document.getElementById("hintDiv"))) {
     const data = {
       csrfmiddlewaretoken: getCookie("csrftoken")
     }
@@ -230,6 +274,8 @@ function closeModal() {
     if (child.nodeName === "FORM") continue;
     modalElement.removeChild(child);
   }
+
+  if (html5QrcodeScanner) html5QrcodeScanner.clear();
 }
 
 const modalElement = document.getElementById("myForm");
