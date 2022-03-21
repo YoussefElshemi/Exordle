@@ -7,4 +7,5 @@ urlpatterns = [
     path('microsoft/', include('microsoft_auth.urls', namespace='microsoft')),
     path('auth/', include('auth.urls')),
     path('map/', include('map.urls')),
+    path('leaderboard/', include('leaderboard.urls')),
 ]
