@@ -39,19 +39,21 @@ document.addEventListener("keydown", async ({ key }) => {
         currentPosition.previousElementSibling.value = "";
         return currentPosition.previousElementSibling.focus();
       }
-      
-      if (currentPosition.value) {
-        const previousParent = currentPosition.parentElement.previousElementSibling;
-        if (previousParent) {
-          await sleep(1);
-          return previousParent.children[previousParent.length - 1].focus();
-        } else {
-          await sleep(1);
-          return currentPosition.previousElementSibling.focus();
-        }
-      }
 
-      currentPosition.focus();
+      if (currentPosition){
+        if (currentPosition.value) {
+          const previousParent = currentPosition.parentElement.previousElementSibling;
+          if (previousParent) {
+            await sleep(1);
+            return previousParent.children[previousParent.length - 1].focus();
+          } else {
+            await sleep(1);
+            return currentPosition.previousElementSibling.focus();
+          }
+        }
+
+        currentPosition.focus();
+      }
     }
   }
 });
@@ -322,9 +324,15 @@ if (keyboard) {
           }
 
           if (input.id === "enter") {
-            const nextParent = currentPosition.parentElement.parentElement;
-            const form = currentPosition.parentElement.parentElement.previousElementSibling;
-            submitGuess(form, nextParent);
+            if (currentPosition) {
+              const nextParent = currentPosition.parentElement.parentElement;
+              const form = currentPosition.parentElement.parentElement.previousElementSibling;
+              submitGuess(form, nextParent);
+            } else {
+              const form = forms[forms.length - 1];
+              submitGuess(form, null);
+            }
+
           }
         } else {
           if (currentPosition.disabled) return;
@@ -344,9 +352,11 @@ if (keyboard) {
 async function submitGuess(form, nextParent) {
   const data = Object.fromEntries(new FormData(form)); 
   const wordArray = Object.values(data).filter(c => c != " ");
-  wordArray.splice(-2);
-  const word = wordArray.reduce((a, b) => a + b);
 
+  wordArray.splice(-2);
+  if (!wordArray.length) return;
+
+  const word = wordArray.reduce((a, b) => a + b);
   if (word.length !== form.children[2].children.length) return;
 
   $.ajax({
@@ -411,7 +421,7 @@ async function submitGuess(form, nextParent) {
         return hintButton.onclick = checkIn
       }
         
-      if (nextParent) {              
+      if (nextParent) {
         for (const input of nextParent) {
           input.disabled = false;
         }
