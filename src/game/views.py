@@ -8,7 +8,9 @@ import qrcode.image.svg
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
 from django.utils import timezone
-from .models import Guesses, Hints, Words
+
+from auth.models import GameUser
+from .models import Guesses, Hints, Words, CheckIns
 
 def index(request):
     context = {
@@ -22,6 +24,12 @@ def play(request):
     # only accessible if user is logged in
     if request.user.is_authenticated:
         
+        # create game_user object
+        try: 
+            game_user = GameUser.objects.get(user=request.user)
+        except:
+            game_user = GameUser.objects.create(user=request.user, points=0, wins=0)
+                    
         # get word of the day and previous guesses for this word if there are any
         word = Words.get_word()
         guesses = Guesses.objects.filter(user=request.user, word=word, day_of_guess=datetime.now()) 
@@ -29,10 +37,22 @@ def play(request):
                                      timestamp__gte=timezone.now().replace(hour=0, minute=0, second=0), 
                                      timestamp__lte=timezone.now().replace(hour=23, minute=59, second=59))
         
+                    
+        try:
+            CheckIns.objects.get(user=request.user, word=word, day=datetime.now())
+            checked_in = True
+        except:
+            checked_in = False
+            
         css_guesses = []
         css_keyboard = []
+        success = False
         
         for guess in guesses:
+            if guess.correct:
+                success = True
+                
+                
             guess_object = make_guess(str(guess))
             response = word.guess(request, guess_object, False)
             css_guesses.append(list(response.values()))
@@ -48,8 +68,11 @@ def play(request):
         length = len(str(word)) + 1
         
         context = {
+            'game_user': game_user,
             'user': request.user,
             'guesses': guesses,
+            'success': success,
+            'checked_in': checked_in,
             'css_guesses': css_guesses,
             'css_keyboard': css_keyboard,
             'word_range': range(1, length),
@@ -69,6 +92,17 @@ def check(request):
         word = Words.get_word()
         data = word.guess(request, request.POST.dict())
         
+        success = True
+        for value in data.values():
+            if value == "wrong" or value == "correct":
+                success = False
+        
+        if success:            
+            word.num_correct_guesses += 1
+            word.save()
+
+        data["success"] = success
+                
         return JsonResponse(data)
 
     return None
@@ -105,23 +139,37 @@ def qr_code(request):
 def check_in(request):
     # ensure user is logged in
     if request.method == 'POST' and request.user.is_authenticated:
+        word = Words.get_word()
         
-        # get word of the day's location
-        first_location = Words.get_word().location
-        
-        second_location = {
+        user_location = {
             "latitude": float(request.POST.get("latitude")),
             "longitude": float(request.POST.get("longitude"))
         }
                
         # calcuate distance between user's current location and the word's location                                 
-        distance = get_distance(first_location, second_location)
-                
+        distance = get_distance(word.location, user_location)
+        
         # if they are within the the radius                
-        if (distance < first_location.radius):
-            return JsonResponse({ "success": True }) 
+        if (distance < word.location.radius):
+            guesses = Guesses.objects.filter(user=request.user, word=word, day_of_guess=datetime.now()) 
+            hints = Hints.objects.filter(receiver=request.user, word=word, 
+                                     timestamp__gte=timezone.now().replace(hour=0, minute=0, second=0), 
+                                     timestamp__lte=timezone.now().replace(hour=23, minute=59, second=59))
+            
+            points = len(str(word)) * 100 + 300
+            points -= guesses.count() * 100
+            points -= hints.count() * 100
+            
+            game_user = GameUser.objects.get(user=request.user)
+            game_user.points += points
+            game_user.wins += 1
+            game_user.save()
+            
+            CheckIns.objects.create(user=request.user, word=word, points=points, day=datetime.now())
+            
+            return JsonResponse({ "success": True, "points": points }) 
         else:
-            return JsonResponse({ "success": False, "distance": distance - first_location.radius })
+            return JsonResponse({ "success": False, "distance": distance - word.location.radius })
         
     return None
 
@@ -160,6 +208,9 @@ def hint(request):
                     for hint_object in hints:
                         if hint_object.creator == hint.creator:
                             return JsonResponse({ "success": False, "message": "You cannot redeem a hint from this user again until tomorrow" })
+                        
+                    if hints.count() == 3:
+                        return JsonResponse({ "success": False, "message": "You can only redeem 3 hints per day" })
                            
                     # use hint up                     
                     hint.receiver = request.user
@@ -176,6 +227,11 @@ def hint(request):
             
     
     return None
+
+def get_points(request):
+    if request.user.is_authenticated:
+        game_user = GameUser.objects.get(user=request.user)
+        return JsonResponse({ "points": game_user.points, "wins": game_user.wins })
 
 # function to calculate distance between to co-ordinates
 def get_distance(first_location, second_location):
