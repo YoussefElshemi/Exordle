@@ -16,4 +16,4 @@ def search(request):
             return JsonResponse({ "success": True, "lng": location.longitude, "lat": location.latitude })
         except:
             return JsonResponse({ "success": False, "message": "Word is not valid" })
-    return None
+    return JsonResponse({ "success": False, "message": "You must be logged in to look up words" })

@@ -2,7 +2,7 @@ from django.utils import timezone
 from django.test import TestCase
 
 from auth.models import GameUser
-from .models import Words, Locations, Hints
+from .models import Guesses, Words, Locations, Hints
 from django.contrib.auth.models import User
 
 class WordTestCase(TestCase):
@@ -85,7 +85,9 @@ class TestPOSTRequests(TestCase):
         correct_response = { "1": "perfect", "2": "perfect", "3": "perfect", "4": "perfect", "5": "perfect", "success": True }
         
         self.assertEqual(response.json(), correct_response)
+        self.assertEqual(Guesses.objects.count(), 1)
         
+
     def test_create_hint(self):
         """Testing the creation of hints"""
         self.client.login(username="testuser", password="12345")
@@ -94,6 +96,7 @@ class TestPOSTRequests(TestCase):
         response = self.client.post("/qr/", data)
         self.assertIsNotNone(response.json()["code"])
         self.assertIsNotNone(response.json()["svg"])
+        self.assertEqual(Hints.objects.count(), 2)
 
     def test_use_hint(self):
         """Testing using hints"""
@@ -105,3 +108,19 @@ class TestPOSTRequests(TestCase):
 
         self.assertEqual(response.json()["success"], True)
         self.assertEqual(response.json()["data"], correct_response)
+        
+    def test_login_redirect(self):
+        """Test if you are redirected to login when you try to play"""
+        response = self.client.get("/play/")
+        
+        self.assertEqual(response.url, "/auth/login")
+    
+    def test_map_search(self):
+        """Test if the co-ordinates are returned from a search"""
+        self.client.login(username="testuser", password="12345")
+        data = { "csrfmiddlewaretoken": "", "search": "FORUM" }
+        
+        response = self.client.post("/map/search/", data)
+        self.assertEqual(response.json()["success"], True)
+        self.assertEqual(response.json()["lng"], 0)
+        self.assertEqual(response.json()["lat"], 0)

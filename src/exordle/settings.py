@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import environ
+import os
 
 env = environ.Env(DEBUG=(bool, False))
 environ.Env.read_env()
@@ -63,7 +64,7 @@ ROOT_URLCONF = 'exordle.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'exordle', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

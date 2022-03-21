@@ -18,7 +18,7 @@ class Words(models.Model):
     word = models.TextField(primary_key=True, max_length=20)
     last_used = models.DateField()
     num_correct_guesses = models.IntegerField(default=0)
-    num_uses = models.IntegerField(default=0)
+    num_uses = models.IntegerField(dsefault=0)
     location = models.ForeignKey(Locations, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -120,3 +120,14 @@ class Guesses(models.Model):
     class Meta:
         verbose_name = "Guess"
         verbose_name_plural = "Guesses"
+
+class CheckIns(models.Model):
+    checkin_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    word = models.ForeignKey(Words, on_delete=models.CASCADE, default=None)
+    points = models.IntegerField(default=0)
+    day = models.DateField()
+    
+    class Meta:
+        verbose_name = "Check In"
+        verbose_name_plural = "Check Ins"
