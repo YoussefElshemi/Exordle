@@ -16,7 +16,8 @@
   <body>
     <div class="container">
       {% include '../navbar.html' %}
-      <img src="{% static '/img/banner.png' %}" width="50%" alt="exordle banner">
+      <img onclick="window.location='/play';"
+      src="{% static '/img/banner.png' %}" width="50%" alt="exordle banner">
       <h1>A DAILY WORD GAME!</h1>
     </div>
   </body>

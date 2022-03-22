@@ -59,6 +59,7 @@ html, body {
   top: 0; bottom: 0;
   margin: auto;
   text-align: center;
+  cursor: pointer;
 }
 
 .container > h1 {
