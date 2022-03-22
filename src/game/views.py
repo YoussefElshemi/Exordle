@@ -161,7 +161,7 @@ def check_in(request):
         distance = get_distance(word.location, user_location)
         
         # if they are within the the radius                
-        if (distance < word.location.radius):
+        if (distance <= word.location.radius):
             guesses = Guesses.objects.filter(user=request.user, word=word, day_of_guess=datetime.now()) 
             hints = Hints.objects.filter(receiver=request.user, word=word, 
                                      timestamp__gte=timezone.now().replace(hour=0, minute=0, second=0), 
@@ -180,7 +180,7 @@ def check_in(request):
 
             return JsonResponse({ "success": True, "message": f"Successfully checked in, received {points} points" }) 
         else:
-            return JsonResponse({ "success": False, "message": f"You are ${round(distance)}m from the correct place" })
+            return JsonResponse({ "success": False, "message": f"You are {round(distance)}m from the correct place" })
         
     return None
 

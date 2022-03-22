@@ -125,8 +125,27 @@ class TestPOSTRequests(TestCase):
         self.assertEqual(response.json()["lng"], 0)
         self.assertEqual(response.json()["lat"], 0)
         
-"""Checking the template matches the HTML page"""
+    def test_check_in(self):
+        """Test checking in"""
+        self.client.login(username="testuser", password="12345")
+        data = { "csrfmiddlewaretoken": "", "latitude": 0, "longitude": 0 }
+        
+        response = self.client.post("/check_in/", data)    
+        self.assertEqual(response.json()["success"], True)
+        self.assertIn("Successfully checked in", response.json()["message"])
+        
+    def test_double_check_in(self):
+        """Test checking in when already checked in"""
+        self.client.login(username="testuser", password="12345")
+        data = { "csrfmiddlewaretoken": "", "latitude": 0, "longitude": 0 }
+        self.client.post("/check_in/", data)
+        
+        response = self.client.post("/check_in/", data)
+        self.assertEqual(response.json()["success"], False)
+        self.assertEqual(response.json()["message"], "You are already checked in")
+
 class GamePageTests(TestCase):
+    """Checking the template matches the HTML page"""
     def setUp(self):
         User.objects.create_user(username="testuser", password="12345")
         
@@ -143,17 +162,3 @@ class GamePageTests(TestCase):
         
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'game/play.html')
-
-class LeaderboardPageTests(TestCase):
-    def test_leaderboard_page(self):
-        response = self.client.get('/leaderboard/')
-        
-        self.assertEquals(response.status_code, 200)
-        self.assertTemplateUsed(response, 'leaderboard/index.html')
-
-class MapPageTests(TestCase):
-    def test_map_page(self):
-        response = self.client.get('/map/')
-                
-        self.assertEquals(response.status_code, 200)
-        self.assertTemplateUsed(response, 'map/index.html')
