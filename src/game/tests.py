@@ -124,3 +124,36 @@ class TestPOSTRequests(TestCase):
         self.assertEqual(response.json()["success"], True)
         self.assertEqual(response.json()["lng"], 0)
         self.assertEqual(response.json()["lat"], 0)
+        
+"""Checking the template matches the HTML page"""
+class GamePageTests(TestCase):
+    def setUp(self):
+        User.objects.create_user(username="testuser", password="12345")
+        
+
+    def test_home_page(self):
+        response = self.client.get('/')
+        
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'game/index.html')
+
+    def test_play_page(self):
+        self.client.login(username="testuser", password="12345")
+        response = self.client.get('/play/')
+        
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'game/play.html')
+
+class LeaderboardPageTests(TestCase):
+    def test_leaderboard_page(self):
+        response = self.client.get('/leaderboard/')
+        
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'leaderboard/index.html')
+
+class MapPageTests(TestCase):
+    def test_map_page(self):
+        response = self.client.get('/map/')
+                
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'map/index.html')
