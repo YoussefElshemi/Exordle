@@ -267,23 +267,33 @@ closeElement.addEventListener("click", () => {
   closeModal();
 });
 
+const closeHelpElement = document.getElementById("closeHelp");
+closeHelpElement.addEventListener("click", () => {
+  closeModal(document.getElementById("helpModal"));
+});
 
-function closeModal() {
-  const modalElement = document.getElementById("myForm");
-  modalElement.style.display = "none";
 
-  for (const child of modalElement.children) {
-    if (child.nodeName === "FORM") continue;
-    modalElement.removeChild(child);
+function closeModal(modalElement) {
+  if (!modalElement) {
+    modalElement = document.getElementById("myForm");
+    for (const child of modalElement.children) {
+      if (child.nodeName === "FORM") continue;
+      modalElement.removeChild(child);
+    }
+
+    if (html5QrcodeScanner) html5QrcodeScanner.clear();
   }
 
-  if (html5QrcodeScanner) html5QrcodeScanner.clear();
+  modalElement.style.display = "none";
 }
 
 const modalElement = document.getElementById("myForm");
 window.onclick = event => {
   const backgroundElement = document.getElementsByClassName("parent")[0];
-  if (event.target == backgroundElement) closeModal();
+  if (event.target == backgroundElement) {
+    closeModal(document.getElementById("helpModal"));
+    closeModal();
+  }
 }
 
 const keyboard = document.getElementsByClassName("keyboard")[0];
@@ -502,6 +512,11 @@ if (keyboard) {
       }
     }
   }
+}
+
+function helpButton() {
+  const modalElement = document.getElementById("helpModal");
+  modalElement.style.display = "block";    
 }
 
 async function sleep(timeout=2000) {

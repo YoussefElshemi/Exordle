@@ -19,6 +19,9 @@
   </head>
   <body class="container">
     {% include '../navbar.html' %}
+    <div id="help" class="information" onclick="helpButton()">
+      <i class="fa fa-question-circle fa-2x"></i>
+    </div>
     <h1 id="points">Points: {{ game_user.points}}</h1>
     <h1 id="wins">Wins: {{ game_user.wins }}</h1>
     <h4 id="checkInText" class="checkIn"></h4>
@@ -49,6 +52,26 @@
           <button onclick="scanQr()" type="button" style="width: 30%;" class="green">Scan</button>
         </center>
       </form>
+    </div>
+    <div class="form-popup" id="helpModal">
+      <span id="closeHelp" class="close" title="Close Modal">&times;</span>
+      <br>
+      <h1 class="title">How To Play</h1>
+      <h3 class="title"><br>
+        Guess the EXORDLE.
+        <br><br>
+        Each guess must be a valid word, and a place on campus. Hit the enter button to submit.
+        <br><br>
+        After each guess, the color of the tiles will change to show how close your guess was to the word.
+      <h3>
+      <img class="helpImage" src="{% static '/img/perfect.png' %}" alt="exordle perfect">
+      <h5 class="title">The letter <strong>C</strong> is in the word and in the correct spot.<h5>
+
+      <img class="helpImage" src="{% static '/img/correct.png' %}" alt="exordle correct">
+      <h5 class="title">The letter <strong>O</strong> is in the word but in the correct spot.<h5>
+
+      <img class="helpImage" src="{% static '/img/wrong.png' %}" alt="exordle wrong">
+      <h5 class="title">The letter <strong>E</strong> is not in the word in any spot.<h5>
     </div>
     {% if not success %}
     <div class="keyboard">
