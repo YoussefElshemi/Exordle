@@ -15,11 +15,16 @@
   <body>
     <div class="container">
       {% include '../navbar.html' %}
+      <div id="help" class="information" onclick="helpButton()">
+        <i class="fa fa-question-circle fa-2x"></i>
+      </div>
       <img onclick="window.location='/play';"
       src="{% static '/img/banner.png' %}" width="50%" alt="exordle banner">
       <h1>A DAILY WORD GAME!</h1>
     </div>
+    {% include './help_modal.html' %}
   </body>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="{% static '/js/help.js' %}"></script>
   <script src="{% static '/js/navbar.js' %}"></script>
 </html>
