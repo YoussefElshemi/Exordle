@@ -21,6 +21,7 @@ html, body {
   caret-color: transparent;
   text-transform: uppercase;
   font-weight: bold;
+  padding: 0;
 }
 
 .word:focus {

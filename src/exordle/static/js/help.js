@@ -1,17 +1,16 @@
 const closeHelpElement = document.getElementById("closeHelp");
 closeHelpElement.addEventListener("click", () => {
-  closeModal();
+  closeHelpModal();
 });
 
 window.onclick = event => {
   const backgroundElement = document.getElementsByClassName("container")[0];
   if (event.target == backgroundElement) {
-    closeModal(document.getElementById("helpModal"));
-    closeModal();
+    closeHelpModal();
   }
 }
 
-function closeModal() {
+function closeHelpModal() {
   const modalElement = document.getElementById("helpModal");
   modalElement.style.display = "none";
 }
