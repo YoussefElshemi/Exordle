@@ -286,7 +286,6 @@ window.onclick = event => {
   const backgroundElement = document.getElementsByClassName("parent")[0];
   if (event.target == backgroundElement) {
     closeModal();
-    closeHelpModal();
   }
 }
 
@@ -506,21 +505,6 @@ if (keyboard) {
       }
     }
   }
-}
-
-const closeHelpElement = document.getElementById("closeHelp");
-closeHelpElement.addEventListener("click", () => {
-  closeHelpModal();
-});
-
-function closeHelpModal() {
-  const modalElement = document.getElementById("helpModal");
-  modalElement.style.display = "none";
-}
-
-function helpButton() {
-  const modalElement = document.getElementById("helpModal");
-  modalElement.style.display = "block";    
 }
 
 async function sleep(timeout=2000) {
