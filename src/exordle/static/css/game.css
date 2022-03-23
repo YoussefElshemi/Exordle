@@ -232,11 +232,13 @@ html, body {
   bottom: 2%;
   transform: translate(-50%, -2%);
   margin: 0 auto;
+  touch-action: manipulation;
 }
 
 .keyboard > .row {
   display: flex; 
   justify-content: center;
+  touch-action: manipulation;
 }
 
 .keyboard > .row > * {
@@ -253,4 +255,5 @@ html, body {
   cursor: pointer;
   margin: 0.7% 0.5%;
   align-items: center;
+  touch-action: manipulation;
 }
