@@ -1,4 +1,4 @@
-from datetime import date, timezone
+from django.utils import timezone
 import os
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -93,7 +93,7 @@ class Words(models.Model):
                     word=self,
                     guess=guess_attempt.upper(), 
                     guess_num=guess_num, 
-                    day_of_guess=date.today(),
+                    day_of_guess=timezone.now(),
                     correct=correct
                 )
                 

@@ -1,4 +1,3 @@
-from cmath import exp
 from datetime import datetime, timedelta
 import random
 import string
@@ -33,14 +32,14 @@ def play(request):
                     
         # get word of the day and previous guesses for this word if there are any
         word = Words.get_word()
-        guesses = Guesses.objects.filter(user=request.user, word=word, day_of_guess=datetime.now()) 
+        guesses = Guesses.objects.filter(user=request.user, word=word, day_of_guess=timezone.now()) 
         hints = Hints.objects.filter(receiver=request.user, word=word, 
                                      timestamp__gte=timezone.now().replace(hour=0, minute=0, second=0), 
                                      timestamp__lte=timezone.now().replace(hour=23, minute=59, second=59))
         
                     
         try:
-            CheckIns.objects.get(user=request.user, word=word, day=datetime.now())
+            CheckIns.objects.get(user=request.user, word=word, day=timezone.now())
             checked_in = True
         except:
             checked_in = False
@@ -144,7 +143,7 @@ def check_in(request):
         word = Words.get_word()
         
         try:
-            CheckIns.objects.get(user=request.user, word=word, day=datetime.now())
+            CheckIns.objects.get(user=request.user, word=word, day=timezone.now())
             checked_in = True
         except:
             checked_in = False
@@ -162,7 +161,7 @@ def check_in(request):
         
         # if they are within the the radius                
         if (distance <= word.location.radius):
-            guesses = Guesses.objects.filter(user=request.user, word=word, day_of_guess=datetime.now()) 
+            guesses = Guesses.objects.filter(user=request.user, word=word, day_of_guess=timezone.now()) 
             hints = Hints.objects.filter(receiver=request.user, word=word, 
                                      timestamp__gte=timezone.now().replace(hour=0, minute=0, second=0), 
                                      timestamp__lte=timezone.now().replace(hour=23, minute=59, second=59))
@@ -176,7 +175,7 @@ def check_in(request):
             game_user.wins += 1
             game_user.save()
             
-            CheckIns.objects.create(user=request.user, word=word, points=points, day=datetime.now())
+            CheckIns.objects.create(user=request.user, word=word, points=points, day=timezone.now())
 
             return JsonResponse({ "success": True, "message": f"Successfully checked in, received {points} points" }) 
         else:
