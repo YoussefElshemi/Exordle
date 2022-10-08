@@ -6,7 +6,7 @@ charset-normalizer==2.0.12
 colorama==0.4.4
 cryptography==36.0.1
 distlib==0.3.4
-Django==4.0.6
+Django==4.0.7
 django-cors-headers==3.11.0
 django-environ==0.8.1
 django_microsoft_auth==2.4.1
@@ -18,11 +18,11 @@ isort==5.10.1
 lazy-object-proxy==1.7.1
 mccabe==0.6.1
 mysqlclient==2.1.0
-oauthlib==3.2.0
+oauthlib==3.2.1
 pipenv==2022.1.8
 platformdirs==2.4.1
 pycparser==2.21
-PyJWT==2.3.0
+PyJWT==2.4.0
 pylint==2.12.2
 PyYAML==6.0
 qrcode==7.3.1
